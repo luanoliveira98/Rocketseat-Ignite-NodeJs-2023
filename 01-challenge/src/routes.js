@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { Database } from './database.js'
 import { buildRoutePath } from './utils/build-route-path.js'
+import { validationTasksData } from './validation/tasks.js'
 
 const database = new Database()
 
@@ -11,6 +12,12 @@ export const routes = [
     path: buildRoutePath('/tasks'),
     handler: (req, res) => {
       const { title, description } = req.body
+
+      const error = validationTasksData({ title, description })
+
+      if(error) {
+        return res.writeHead(400).end(JSON.stringify({ message: error }))
+      }
 
       const task = {
         id: randomUUID(),
@@ -39,6 +46,12 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
       const { title, description } = req.body
+
+      const error = validationTasksData({ title, description })
+
+      if(error) {
+        return res.writeHead(400).end(JSON.stringify({ message: error }))
+      }
 
       database.update('tasks', id, { title, description })
 
