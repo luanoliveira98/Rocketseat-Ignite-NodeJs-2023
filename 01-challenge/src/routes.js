@@ -53,7 +53,10 @@ export const routes = [
         return res.writeHead(400).end(JSON.stringify({ message: error }))
       }
 
-      database.update('tasks', id, { title, description })
+      const updated = database.update('tasks', id, { title, description })
+      if (!updated) {
+        return res.writeHead(404).end(JSON.stringify({ message: 'Task not found' }))
+      }
 
       return res.writeHead(204).end()
     }
@@ -64,7 +67,10 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
-      database.update('tasks', id, { completed_at: new Date() })
+      const updated = database.update('tasks', id, { completed_at: new Date() })
+      if (!updated) {
+        return res.writeHead(404).end(JSON.stringify({ message: 'Task not found' }))
+      }
 
       return res.writeHead(204).end()
     }
@@ -75,7 +81,10 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
-      database.delete('tasks', id)
+      const deleted = database.delete('tasks', id)
+      if (!deleted) {
+        return res.writeHead(404).end(JSON.stringify({ message: 'Task not found' }))
+      }
 
       return res.writeHead(204).end()
     }

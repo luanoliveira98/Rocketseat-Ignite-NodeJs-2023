@@ -38,26 +38,36 @@ export class Database {
   }
 
   update(table, id, data) {
-    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+    if(Array.isArray(this.#database[table])) {
+      const rowIndex = this.#database[table].findIndex(row => row.id === id)
 
-    if(rowIndex > -1) {
-      data.updated_at = new Date()
+      if(rowIndex > -1) {
+        data.updated_at = new Date()
 
-      const keys = Object.keys(data)
-      for (const key of keys) {
-        this.#database[table][rowIndex][key] = data[key]
+        const keys = Object.keys(data)
+        for (const key of keys) {
+          this.#database[table][rowIndex][key] = data[key]
+        }
+
+        this.#persist()
+        return true
       }
-
-      this.#persist()
     }
+
+    return false
   }
 
   delete(table, id) {
-    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+    if(Array.isArray(this.#database[table])) {
+      const rowIndex = this.#database[table].findIndex(row => row.id === id)
 
-    if(rowIndex > -1) {
-      this.#database[table].splice(rowIndex, 1)
-      this.#persist()
+      if(rowIndex > -1) {
+        this.#database[table].splice(rowIndex, 1)
+        this.#persist()
+        return true
+      }
     }
+
+    return false
   }
 }
