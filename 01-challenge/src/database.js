@@ -24,13 +24,31 @@ export class Database {
   }
 
   insert(table, data) {
+    data.created_at = new Date()
+    data.updated_at = new Date()
+
     if(Array.isArray(this.#database[table])) {
       this.#database[table].push(data)
     } else {
-      this.#database[table] = data
+      this.#database[table] = [data]
     }
 
     this.#persist()
     return data;
+  }
+
+  update(table, id, data) {
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+
+    if(rowIndex > -1) {
+      data.updated_at = new Date()
+
+      const keys = Object.keys(data)
+      for (const key of keys) {
+        this.#database[table][rowIndex][key] = data[key]
+      }
+
+      this.#persist()
+    }
   }
 }
